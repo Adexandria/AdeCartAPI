@@ -1,6 +1,7 @@
 ﻿using AdeCartAPI.UserModel;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
@@ -26,7 +27,7 @@ namespace AdeCartAPI.UserService
 
         }
         
-        public async Task DeleteAddress(Guid addressId)
+        public async Task DeleteAddress(int addressId)
         {
             var sqlConnection = CreateConnection();
             var sqlCommand = new SqlCommand("Address_Delete", sqlConnection)
@@ -51,10 +52,28 @@ namespace AdeCartAPI.UserService
             sqlCommand.Parameters.AddWithValue("AddressId", updatedAddress.AddressId);
             sqlCommand.Parameters.AddWithValue("UserId", updatedAddress.UserId);
             await sqlConnection.OpenAsync();
-            sqlCommand.ExecuteNonQuery();
+            await sqlCommand.ExecuteNonQueryAsync();
             sqlConnection.Close();
         }
-
+        public int GetAddress(int addressId) 
+        {
+            var sqlConnection = CreateConnection();
+            var dataSet = new DataSet();
+            var sqlData = new SqlDataAdapter
+            {
+                SelectCommand = new SqlCommand("Address_Get", sqlConnection)
+                {
+                    CommandType = CommandType.StoredProcedure
+                }
+            };
+            sqlData.SelectCommand.Parameters.AddWithValue("AddressId", addressId);
+            sqlConnection.Open();
+            sqlData.SelectCommand.ExecuteNonQuery();
+            sqlData.Fill(dataSet);
+            sqlConnection.Close();
+            return dataSet.ExtendedProperties.Count;
+           
+        }
         private SqlConnection CreateConnection() 
         {
             SqlConnection sqlConnection = new SqlConnection(connectionString);
