@@ -13,8 +13,8 @@ namespace AdeCartAPI.Profiles
         public AddressProfile()
         {
             CreateMap<User, UserAddress>().ForMember(s => s.UserId, dest => dest.MapFrom(s => s.Id));
-            CreateMap<UserAddress, AddressCreate>();
-            CreateMap<UserAddress, AddressUpdate>();
+            CreateMap<AddressCreate,UserAddress >();
+            CreateMap< AddressUpdate,UserAddress>();
         }
     }
 }
