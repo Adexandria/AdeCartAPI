@@ -12,7 +12,7 @@ namespace AdeCartAPI.Model
         public int ItemId { get; set; }
         public string ItemName { get; set; }
         public int ItemPrice { get; set; }
-        public string Description { get; set; }
+        public string ItemDescription { get; set; }
         public int AvailableItem { get; set; }
     }
 }
