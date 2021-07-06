@@ -6,3 +6,5 @@
  [AvailableItem] tinyint NOT NULL,
  CONSTRAINT [PK_Item] PRIMARY KEY CLUSTERED ([ItemId] ASC)
 );
+INSERT INTO Item(ItemName,ItemPrice,ItemDescription,AvailableItem) 
+   VALUES('Gucci Watch',2300,'This is a gucci watch original',3);

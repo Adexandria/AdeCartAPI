@@ -1,4 +1,5 @@
 using AdeCartAPI.Model;
+using AdeCartAPI.Service;
 using AdeCartAPI.UserService;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -32,6 +33,7 @@ namespace AdeCartAPI
         {
             services.AddControllers();
             services.AddScoped<IAddress, AddressRepository>();
+            services.AddScoped<ITemInterface, ItemRepository>();
             services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<IdentityDb>().AddSignInManager().AddDefaultTokenProviders();
             services.AddDbContext<IdentityDb>(opts =>
             {
