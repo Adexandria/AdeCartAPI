@@ -26,6 +26,20 @@ namespace AdeCartAPI.Service
             sqlConnection.Close();
         }
 
+        public async Task DeleteOrder(int orderId)
+        {
+            var sqlConnection = CreateConnection();
+            var order = new Order();
+            var sqlCommand = new SqlCommand("Order_Delete", sqlConnection)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+            sqlCommand.Parameters.AddWithValue("OrderId", orderId);
+            await sqlConnection.OpenAsync();
+            sqlCommand.ExecuteNonQuery();
+            await  sqlConnection.CloseAsync();
+        }
+
         public Order GetOrder(int orderId)
         {
             var sqlConnection = CreateConnection();

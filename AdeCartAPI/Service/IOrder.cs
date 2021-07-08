@@ -12,5 +12,6 @@ namespace AdeCartAPI.Service
         Order GetOrder(int orderId);
         Task AddOrder(Order order);
         Task UpdateOrder(Order order);
+        Task DeleteOrder(int orderId);
     }
 }
