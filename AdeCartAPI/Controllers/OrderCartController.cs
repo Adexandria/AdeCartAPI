@@ -15,7 +15,7 @@ namespace AdeCartAPI.Controllers
 {
     [Route("api/{username}/carts")]
     [ApiController]
-    // [Authorize]
+    //[Authorize]
     public class OrderCartController : ControllerBase
     {
         readonly IOrderCart _cart;
@@ -33,18 +33,22 @@ namespace AdeCartAPI.Controllers
             var currentUser = await GetUser(username);
             if (currentUser == null) return NotFound();
             var carts = _cart.GetCarts(currentUser.Id);
-            return Ok(carts);
+            var mappedCarts = mapper.Map<List<OrderCart>>(carts);
+            var mappedCartsDTO = mapper.Map<List<OrderCartsDTO>>(mappedCarts);
+            return Ok(mappedCartsDTO);
         }
         [HttpGet("{id}", Name ="OrderCart")]
-        public async Task<ActionResult> GetCart(OrderCart orderCart,string username) 
+        public async Task<ActionResult> GetCart(int id,string username) 
         {
             var currentUser = await GetUser(username);
             if (currentUser == null) return NotFound();
-            var cart = _cart.GetCart(orderCart);
-            return Ok(cart);
+            var cart = _cart.GetCart(id,currentUser.Id);
+            var mappedCart = mapper.Map<OrderCart>(cart);
+            var mappedCartDTO = mapper.Map<OrderCartDTO>(mappedCart);
+            return Ok(mappedCartDTO);
         }
         [HttpPost]
-        public async Task<ActionResult> CreateCart(string username,OrderCart cart) 
+        public async Task<ActionResult> CreateCart(string username) 
         {
             var currentUser = await GetUser(username);
             if (currentUser == null) return NotFound();
@@ -53,17 +57,16 @@ namespace AdeCartAPI.Controllers
             {
                 return BadRequest("Cart already exist");
             }
-            cart.UserId = currentUser.Id;
-            await _cart.AddCart(cart);
+            await _cart.AddCart(currentUser.Id);
             return Ok("Created");
         }
-        [HttpPut("{id}")]
-        public async Task<ActionResult> UpdateCart(string username,OrderCart cart) 
+        [HttpPut()]
+        public async Task<ActionResult> UpdateCart(string username,CartUpdate updatecart) 
         {
             var currentUser = await GetUser(username);
             if (currentUser == null) return NotFound();
-            cart.UserId = currentUser.Id;
-            var currentCart = _cart.GetCart(cart);
+            var cart = mapper.Map<OrderCart>(updatecart);
+            var currentCart = _cart.GetCart(updatecart.OrderCartId,currentUser.Id);
             if (currentCart == null) return NotFound();
             await _cart.UpdateCart(cart);
             return Ok("Successful");
