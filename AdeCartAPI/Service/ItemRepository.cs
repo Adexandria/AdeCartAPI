@@ -49,7 +49,7 @@ namespace AdeCartAPI.Service
             var sqlConnection = CreateConnection();
             var sqlCommand = new SqlCommand("Item_Insert", sqlConnection)
             {
-                CommandType = System.Data.CommandType.StoredProcedure
+                CommandType = CommandType.StoredProcedure
             };
             sqlCommand.Parameters.AddWithValue("ItemName", item.ItemName);
             sqlCommand.Parameters.AddWithValue("ItemPrice", item.ItemPrice);
@@ -104,13 +104,42 @@ namespace AdeCartAPI.Service
             return item;
 
         }
+        public Item GetItemById(int itemId)
+        {
+            var sqlConnection = CreateConnection();
 
+            var sqlCommand = new SqlCommand("Item_GetItemById", sqlConnection)
+            {
+                CommandType = CommandType.StoredProcedure
+            };
+            sqlCommand.Parameters.AddWithValue("ItemId", itemId);
+            sqlConnection.Open();
+            sqlCommand.ExecuteNonQuery();
+            Item item = null;
+            using (var sqlReader = sqlCommand.ExecuteReader())
+            {
+                while (sqlReader.Read())
+                {
+                    item = new Item()
+                    {
+                        ItemId = Convert.ToInt32(sqlReader["ItemId"]),
+                        ItemName = sqlReader["ItemName"].ToString(),
+                        ItemDescription = sqlReader["ItemDescription"].ToString(),
+                        ItemPrice = Convert.ToInt32(sqlReader["ItemPrice"]),
+                        AvailableItem = Convert.ToInt32(sqlReader["AvailableItem"])
+                    };
+                }
+            }
+            sqlConnection.Close();
+            return item;
+
+        }
         public async Task UpdateItem(Item updateItem)
         {
             var sqlConnection = CreateConnection();
             var sqlCommand = new SqlCommand("Item_Update", sqlConnection)
             {
-                CommandType = System.Data.CommandType.StoredProcedure
+                CommandType = CommandType.StoredProcedure
             };
             sqlCommand.Parameters.AddWithValue("ItemId", updateItem.ItemId);
             sqlCommand.Parameters.AddWithValue("ItemName", updateItem.ItemName);

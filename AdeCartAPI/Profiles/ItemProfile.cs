@@ -23,10 +23,28 @@ namespace AdeCartAPI.Profiles
            .ForMember(s => s.ItemDescription, opt => opt.MapFrom(s => s.Description));
 
             CreateMap<ItemUpdate, Item>()
-            .ForMember(s => s.ItemId, opt => opt.MapFrom(s => s.Id))
-           .ForMember(s => s.ItemName, opt => opt.MapFrom(s => s.Name))
-           .ForMember(s => s.ItemPrice, opt => opt.MapFrom(s => s.Price))
-           .ForMember(s => s.ItemDescription, opt => opt.MapFrom(s => s.Description));
+            .ForMember(s => s.ItemId, opt => {
+                opt.Condition((src, dest, srcMember) => srcMember != 0); 
+                opt.MapFrom(s => s.Id);
+                
+            })
+           .ForMember(s => s.ItemName, opt => { 
+               opt.Condition((src, dest, srcMember) => srcMember != null);
+               opt.MapFrom(s => s.Name);
+                
+           })
+           .ForMember(s => s.ItemPrice, opt =>
+           {  
+               opt.Condition((src, dest, srcMember) => srcMember != 0);
+               opt.MapFrom(s => s.Price);
+              
+           })
+            .ForMember(s => s.ItemDescription, opt => { 
+                opt.Condition((src, dest, srcMember) => srcMember != null);
+                opt.MapFrom(s => s.Description);
+            });
+
+          
         }
     }
 }

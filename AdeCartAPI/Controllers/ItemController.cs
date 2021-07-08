@@ -42,7 +42,7 @@ namespace AdeCartAPI.Controllers
             return Ok(currentItem);
         }
 
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<ActionResult<ItemDTO>> AddItem(ItemCreate itemCreate)
         {
@@ -53,18 +53,18 @@ namespace AdeCartAPI.Controllers
             return CreatedAtRoute("GetItem", new { itemName = currentItem.Name}, currentItem);
 
         }
-       // [Authorize(Roles = "Admin")]
+      /* // [Authorize(Roles = "Admin")]
         [HttpPut]
         public async Task<ActionResult> UpdateItem(ItemUpdate itemUpdate)
         {
-            var item = _Item.GetItem(itemUpdate.Name);
-            if (item == null) return NotFound("Item doesn't exist");
-            var updatedItem = mapper.Map<Item>(itemUpdate);
-            await _Item.UpdateItem(updatedItem);
+            var item = _Item.GetItemById(itemUpdate.Id);
+            if (item == null) return NotFound("Item doesn't exist");  
+            var currentItem = mapper.Map<Item>(itemUpdate);
+            await _Item.UpdateItem(currentItem);
             return Ok("Successful");
-        }
+        }*/
 
-       // [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{itemName}")]
         public async Task<ActionResult> DeleteItem(string itemName) 
         {

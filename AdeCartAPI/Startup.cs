@@ -34,8 +34,15 @@ namespace AdeCartAPI
             services.AddControllers();
             services.AddScoped<IAddress, AddressRepository>();
             services.AddScoped<ITemInterface, ItemRepository>();
+            services.AddScoped<IOrderCart, OrderCartRepository>();
+            services.AddScoped<IOrder, OrderRepository>();
             services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<IdentityDb>().AddSignInManager().AddDefaultTokenProviders();
+           
             services.AddDbContext<IdentityDb>(opts =>
+            {
+                opts.UseSqlServer(Configuration.GetConnectionString("AdeCart")).EnableSensitiveDataLogging();
+            });
+            services.AddDbContext<OrderDb>(opts =>
             {
                 opts.UseSqlServer(Configuration.GetConnectionString("AdeCart")).EnableSensitiveDataLogging();
             });
