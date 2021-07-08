@@ -42,9 +42,13 @@ namespace AdeCartAPI.Service
             
         }
 
-        public async Task AddCart(OrderCart cart)
+        public async Task AddCart(string userId)
         {
             var sqlConnection = CreateConnection();
+            var cart = new OrderCart
+            {
+                UserId = userId
+            };
             var sqlCommand = new SqlCommand("OrderCart_Insert", sqlConnection)
             {
                 CommandType = CommandType.StoredProcedure
@@ -56,7 +60,7 @@ namespace AdeCartAPI.Service
             sqlConnection.Close();
         }
 
-        public OrderCartData GetCart(OrderCart cart )
+        public OrderCartData GetCart(int orderCartId,string userId )
         {
             var sqlConnection = CreateConnection();
             var newCart = new OrderCartData();
@@ -64,8 +68,13 @@ namespace AdeCartAPI.Service
             {
                 CommandType = CommandType.StoredProcedure
             };
-            sqlCommand.Parameters.AddWithValue("OrderCartId", cart.OrderCartId);
-            sqlCommand.Parameters.AddWithValue("UserId", cart.UserId);
+            var orderCart = new OrderCart
+            {
+                UserId = userId,
+                OrderCartId = orderCartId
+            };
+            sqlCommand.Parameters.AddWithValue("OrderCartId", orderCart.OrderCartId);
+            sqlCommand.Parameters.AddWithValue("UserId", orderCart.UserId);
             sqlConnection.Open();
             sqlCommand.ExecuteNonQuery();
             using (var sqlReader = sqlCommand.ExecuteReader())
