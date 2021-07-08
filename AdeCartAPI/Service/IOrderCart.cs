@@ -11,7 +11,7 @@ namespace AdeCartAPI.Service
     public interface IOrderCart
     {
         List<OrderCartData> GetCarts(string userId);
-        OrderCartData GetCart(int orderId,string userId);
+        OrderCartData GetCart(int orderCartId,string userId);
         Task AddCart(string userId);
         Task UpdateCart(OrderCart cart);
     }
