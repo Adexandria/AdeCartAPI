@@ -15,7 +15,7 @@ namespace AdeCartAPI.Controllers
 {
     [Route("api/{username}/carts")]
     [ApiController]
-    //[Authorize]
+    [Authorize]
     public class OrderCartController : ControllerBase
     {
         readonly IOrderCart _cart;
