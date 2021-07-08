@@ -2,6 +2,7 @@
 using AdeCartAPI.UserModel;
 using AdeCartAPI.UserService;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -10,6 +11,7 @@ namespace AdeCartAPI.Controllers
 {
     [Route("api/user/{username}/address")]
     [ApiController]
+    [Authorize]
     public class AddressController : ControllerBase
     {
         readonly IAddress address;
