@@ -6,5 +6,5 @@
 AS
 BEGIN
   DELETE [dbo].[Order]
-  WHERE OrderId =@OrderId
+  WHERE OrderId = @OrderId
 END
