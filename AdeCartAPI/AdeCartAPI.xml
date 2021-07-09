@@ -1,0 +1,342 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>AdeCartAPI</name>
+    </assembly>
+    <members>
+        <member name="M:AdeCartAPI.Controllers.AddressController.Post(System.String,AdeCartAPI.UserModel.AddressCreate)">
+            <param name="username">
+            the user's username
+            </param>
+            <param name="userAddress">
+            the user's Address
+            </param>
+             <summary>
+             Add the user's Address
+             </summary>
+             
+             <returns>A string status</returns>
+        </member>
+        <member name="M:AdeCartAPI.Controllers.AddressController.Put(System.String,AdeCartAPI.UserModel.AddressUpdate)">
+            <param name="username">
+            the user's username
+            </param>
+            <param name="userAddress">
+            the user's Address
+            </param>
+             <summary>
+             update the user's Address
+             </summary>
+             
+             <returns>None</returns>
+        </member>
+        <member name="M:AdeCartAPI.Controllers.AddressController.Delete(System.String,System.Int32)">
+            <param name="username">
+            the user's username
+            </param>
+            <param name="id">
+            the address id
+            </param>
+             <summary>
+             Delete the user's Address
+             </summary>
+             
+             <returns>None</returns>
+        </member>
+        <member name="M:AdeCartAPI.Controllers.ItemController.GetItems">
+            <summary>
+            Get all items
+            </summary>
+            
+            <returns>A string status</returns>
+        </member>
+        <member name="M:AdeCartAPI.Controllers.ItemController.GetItem(System.String)">
+            <param name="itemName">
+            the item name
+            </param>
+             <summary>
+            Get an individual item
+             </summary>
+             
+             <returns>A string status</returns>
+        </member>
+        <member name="M:AdeCartAPI.Controllers.ItemController.AddItem(AdeCartAPI.DTO.ItemCreate)">
+            <param name="itemCreate">
+            an object used to create item
+            </param>
+             <summary>
+             create a new item
+             </summary>
+             
+        </member>
+        <member name="M:AdeCartAPI.Controllers.ItemController.UpdateItem(AdeCartAPI.DTO.ItemUpdate)">
+            <param name="itemUpdate">
+            an object used to update item
+            </param>
+             <summary>
+             update an existing Item
+             </summary>
+             
+             <returns>A string status</returns>
+        </member>
+        <member name="M:AdeCartAPI.Controllers.ItemController.DeleteItem(System.String)">
+            <param name="itemName">
+            an item Name
+            </param>
+             <summary>
+             delete an existing Item
+             </summary>
+             
+        </member>
+        <member name="M:AdeCartAPI.Controllers.OrderCartController.GetCarts(System.String)">
+            <param name="username">
+            the user's username
+            </param>
+             <summary>
+             gets User Cart
+             </summary>
+             
+             <returns>A string status</returns>
+        </member>
+        <member name="M:AdeCartAPI.Controllers.OrderCartController.GetCart(System.Int32,System.String)">
+            <param name="username">
+            the user's username
+            </param>
+            <param name="id">
+            the user's cart id
+            </param>
+             <summary>
+             Get an individual cart
+             </summary>
+             
+             <returns>A string status</returns>
+        </member>
+        <member name="M:AdeCartAPI.Controllers.OrderCartController.CreateCart(System.String)">
+            <param name="username">
+            the user's username
+            </param>
+             <summary>
+            Create a new cart
+             </summary>
+             
+             <returns>A string status</returns>
+        </member>
+        <member name="M:AdeCartAPI.Controllers.OrderCartController.UpdateCart(System.String,AdeCartAPI.DTO.CartUpdate)">
+            <param name="username">
+            the user's username
+            </param>
+            <param name="updatecart">
+            an object used to update a cart
+            </param>
+             <summary>
+             To update cart
+             </summary>
+             
+             <returns>A string status</returns>
+        </member>
+        <member name="M:AdeCartAPI.Controllers.OrderController.GetOrders(System.String,System.Int32)">
+            <param name="username">
+            the user's username
+            </param>
+            <param name="cartId">
+            the user's cart id
+            </param>
+             <summary>
+             get all orders
+             </summary>
+             
+             <returns>A string status</returns>
+        </member>
+        <member name="M:AdeCartAPI.Controllers.OrderController.GetOrder(System.String,System.Int32,System.Int32)">
+            <param name="username">
+            the user's username
+            </param>
+            <param name="cartId">
+            the user's cart id
+            </param>
+            <param name="orderId">
+            the user's order id
+            </param>
+             <summary>
+             to get an individual order
+             </summary>
+             
+             <returns>A string status</returns>
+        </member>
+        <member name="M:AdeCartAPI.Controllers.OrderController.AddOrder(System.String,System.Int32,AdeCartAPI.DTO.OrderCreate)">
+            <param name="username">
+            the user's username
+            </param>
+            <param name="cartId">
+            the user's cart id
+            </param>
+            <param name="newOrder">
+            an object to create new order
+            </param>
+             <summary>
+             create a new order
+             </summary>
+             
+             <returns>A string status</returns>
+        </member>
+        <member name="M:AdeCartAPI.Controllers.OrderController.UpdateOrder(System.String,System.Int32,System.Int32,AdeCartAPI.DTO.OrderUpdate)">
+            <param name="username">
+            the user's username
+            </param>
+            <param name="cartId">
+            the user's cart id
+            </param>
+            <param name="updateOrder">
+            an object used to update an order
+            </param>
+            <param name="orderId">
+            the user's order id
+            </param>
+             <summary>
+             Updates an order
+             </summary>
+             
+             
+             <returns>A string status</returns>
+        </member>
+        <member name="M:AdeCartAPI.Controllers.OrderController.DeleteOrder(System.String,System.Int32,System.Int32)">
+            <param name="username">
+            the user's username
+            </param>
+            <param name="cartId">
+            the user's cart id
+            </param>
+            <param name="orderId">
+            the user's order id
+            </param>
+             <summary>
+             Delete an order
+             </summary>
+             
+             
+             <returns>A string status</returns>
+        </member>
+        <member name="M:AdeCartAPI.Controllers.PaymentController.PayCharge(System.String,System.Int32,System.Int32)">
+            <param name="username">
+            the user's username
+            </param>
+            <param name="cartId">
+            the user's cart id
+            </param>
+            <param name="orderId">
+            the user's order id
+            </param>
+             <summary>
+             Pay for order
+             </summary>
+             
+             
+             <returns>A string status</returns>
+        </member>
+        <member name="M:AdeCartAPI.Controllers.UserController.SignUp(AdeCartAPI.UserModel.SignUp)">
+            <param name="newuser">
+            an object to sign up a user
+            </param>
+             <summary>
+             Sign up a new user
+             </summary>
+             
+             <returns>A string status</returns>
+        </member>
+        <member name="M:AdeCartAPI.Controllers.UserController.VerifyEmailToken(AdeCartAPI.Model.Token,System.String)">
+            <param name="username">
+            \a user's username
+            </param>
+            <param name="token">
+            a token to confirm user's email
+            </param>
+             <summary>
+            email confrimation
+             </summary>
+             
+             <returns>A string status</returns>
+        </member>
+        <member name="M:AdeCartAPI.Controllers.UserController.Login(AdeCartAPI.UserModel.Login)">
+            <param name="model">
+            an object to login a user
+            </param>
+             <summary>
+            Login a  user
+             </summary>
+             
+             <returns>A string status</returns>
+        </member>
+        <member name="M:AdeCartAPI.Controllers.UserController.ResetPassword(System.String)">
+            <param name="username">
+            \a user's username
+            </param>
+             <summary>
+            reset password
+             </summary>
+             
+             <returns>A string status</returns>
+        </member>
+        <member name="M:AdeCartAPI.Controllers.UserController.VerifyPasswordToken(MoviesAPI.UserModel.ResetPassword,System.String)">
+            <param name="username">
+            \a user's username
+            </param>
+            <param name="resetPassword">
+            an object to reset a password
+            </param>
+             <summary>
+            verify token/reset password confirmation
+             </summary>
+             
+             <returns>A string status</returns>
+        </member>
+        <member name="M:AdeCartAPI.Controllers.UserController.AddPhoneNumber(AdeCartAPI.UserModel.UserNumber,System.String)">
+            <param name="username">
+            \a user's username
+            </param>
+            <param name="phoneNumber">
+            an object used to add user's phonenumber
+            </param>
+             <summary>
+            Add phonenumber
+             </summary>
+             
+             <returns>A string status</returns>
+        </member>
+        <member name="M:AdeCartAPI.Controllers.UserController.ChangePhonenumber(System.String,AdeCartAPI.UserModel.UserNumber)">
+            <param name="username">
+            \a user's username
+            </param>
+            <param name="phoneNumber">
+            an object used to change user's phonenumber
+            </param>
+             <summary>
+             change phonenumber
+             </summary>
+             
+             <returns>A string status</returns>
+        </member>
+        <member name="M:AdeCartAPI.Controllers.UserController.ChangeUsername(AdeCartAPI.UserModel.UserName,System.String)">
+            <param name="username">
+            \a user's username
+            </param>
+            <param name="name">
+            an object used to change user's username
+            </param>
+             <summary>
+             change username
+             </summary>
+             
+             <returns>A string status</returns>
+        </member>
+        <member name="M:AdeCartAPI.Controllers.UserController.Signout(System.String)">
+            <param name="username">
+            \a user's username
+            </param>
+             <summary>
+             sign out user
+             </summary>
+             
+             <returns>A string status</returns>
+        </member>
+    </members>
+</doc>
