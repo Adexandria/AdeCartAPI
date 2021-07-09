@@ -53,16 +53,16 @@ namespace AdeCartAPI.Controllers
             return CreatedAtRoute("GetItem", new { itemName = currentItem.Name}, currentItem);
 
         }
-      /* // [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
         [HttpPut]
         public async Task<ActionResult> UpdateItem(ItemUpdate itemUpdate)
         {
             var item = _Item.GetItemById(itemUpdate.Id);
-            if (item == null) return NotFound("Item doesn't exist");  
-            var currentItem = mapper.Map<Item>(itemUpdate);
+            if (item == null) return NotFound("Item doesn't exist");
+            var currentItem = UpdateItem(itemUpdate, item);
             await _Item.UpdateItem(currentItem);
             return Ok("Successful");
-        }*/
+        }
 
         [Authorize(Roles = "Admin")]
         [HttpDelete("{itemName}")]
@@ -73,6 +73,25 @@ namespace AdeCartAPI.Controllers
             await _Item.DeleteItem(item.ItemId);
             return NoContent();
         } 
-            
+        private Item UpdateItem(ItemUpdate itemUpdate,Item item) 
+        {
+            if(itemUpdate.Name != null) 
+            {
+                item.ItemName = itemUpdate.Name;
+            }
+            if(itemUpdate.Price != 0) 
+            {
+                item.ItemPrice = itemUpdate.Price;
+            }
+            if(itemUpdate.Description != null) 
+            {
+                item.ItemDescription = itemUpdate.Description;
+            }
+            if(itemUpdate.AvailableItem != 0) 
+            {
+                item.AvailableItem = itemUpdate.AvailableItem;
+            }
+            return item;
+        }
     }
 }
