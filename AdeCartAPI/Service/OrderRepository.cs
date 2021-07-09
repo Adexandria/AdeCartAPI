@@ -21,6 +21,7 @@ namespace AdeCartAPI.Service
             };
             sqlCommand.Parameters.AddWithValue("ItemId", order.ItemId);
             sqlCommand.Parameters.AddWithValue("OrderCartId", order.OrderCartId);
+            sqlCommand.Parameters.AddWithValue("Quantity", order.Quantity);
             await sqlConnection.OpenAsync();
             await sqlCommand.ExecuteNonQueryAsync();
             sqlConnection.Close();
@@ -58,6 +59,7 @@ namespace AdeCartAPI.Service
                     order.OrderCartId = Convert.ToInt32(sqlReader["OrderCartId"]);
                     order.ItemId = Convert.ToInt32(sqlReader["ItemId"]);
                     order.OrderId = Convert.ToInt32(sqlReader["OrderId"]);
+                    order.Quantity = Convert.ToInt32(sqlReader["Quantity"]);
                 }
             }
             sqlConnection.Close();
@@ -83,7 +85,8 @@ namespace AdeCartAPI.Service
                     {
                         OrderCartId = Convert.ToInt32(sqlReader["OrderCartId"]),
                         ItemId = Convert.ToInt32(sqlReader["ItemId"]),
-                        OrderId = Convert.ToInt32(sqlReader["OrderId"])
+                        OrderId = Convert.ToInt32(sqlReader["OrderId"]),
+                        Quantity = Convert.ToInt32(sqlReader["Quantity"])
                     });
                 }
             }
@@ -94,13 +97,14 @@ namespace AdeCartAPI.Service
         public async  Task UpdateOrder(Order order)
         {
             var sqlConnection = CreateConnection();
-            var sqlCommand = new SqlCommand("Order_Insert", sqlConnection)
+            var sqlCommand = new SqlCommand("Order_Update", sqlConnection)
             {
                 CommandType = CommandType.StoredProcedure
             };
             sqlCommand.Parameters.AddWithValue("ItemId", order.ItemId);
             sqlCommand.Parameters.AddWithValue("OrderId", order.OrderId);
             sqlCommand.Parameters.AddWithValue("OrderCartId", order.OrderCartId);
+            sqlCommand.Parameters.AddWithValue("Quantity", order.Quantity);
             await sqlConnection.OpenAsync();
             await sqlCommand.ExecuteNonQueryAsync();
             sqlConnection.Close();
