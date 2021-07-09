@@ -5,11 +5,16 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System;
+using Swashbuckle.AspNetCore.Annotations;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace AdeCartAPI.Controllers
 {
+    [SwaggerResponse((int)HttpStatusCode.OK, "Returns if sucessful")]
+    [SwaggerResponse((int)HttpStatusCode.NotFound, "Returns if not found")]
+    [SwaggerResponse((int)HttpStatusCode.NoContent, "Returns no content")]
+
     [Route("api/user/{username}/address")]
     [ApiController]
     [Authorize]
@@ -24,6 +29,18 @@ namespace AdeCartAPI.Controllers
             this.user = user;
             this.mapper = mapper;
         }
+
+        ///<param name="username">
+        ///the user's username
+        ///</param>
+        ///<param name="userAddress">
+        ///the user's Address
+        ///</param>
+        /// <summary>
+        /// Add the user's Address
+        /// </summary>
+        /// 
+        /// <returns>A string status</returns>
         [HttpPost]
         public async Task<ActionResult> Post(string username, AddressCreate userAddress)
         {
@@ -35,6 +52,18 @@ namespace AdeCartAPI.Controllers
             await address.CreateAddress(newAddress);
             return Ok("Address successfully added");
         }
+
+        ///<param name="username">
+        ///the user's username
+        ///</param>
+        ///<param name="userAddress">
+        ///the user's Address
+        ///</param>
+        /// <summary>
+        /// update the user's Address
+        /// </summary>
+        /// 
+        /// <returns>None</returns>
         [HttpPut]
         public async Task<ActionResult> Put(string username, AddressUpdate userAddress)
         {
@@ -48,6 +77,17 @@ namespace AdeCartAPI.Controllers
             await address.UpdateAddress(updateAddress);
             return Ok();
         }
+        ///<param name="username">
+        ///the user's username
+        ///</param>
+        ///<param name="id">
+        ///the address id
+        ///</param>
+        /// <summary>
+        /// Delete the user's Address
+        /// </summary>
+        /// 
+        /// <returns>None</returns>
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(string username,int id) 
         {

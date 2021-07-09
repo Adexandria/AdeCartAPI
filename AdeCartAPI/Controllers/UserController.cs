@@ -8,9 +8,15 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using AdeCartAPI.Model;
 using AdeCartAPI.UserModel;
+using System.Net;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace AdeCartAPI.Controllers
 {
+    [SwaggerResponse((int)HttpStatusCode.OK, "Returns if sucessful")]
+    [SwaggerResponse((int)HttpStatusCode.NotFound, "Returns if not found")]
+    [SwaggerResponse((int)HttpStatusCode.BadRequest, "Returns no content")]
+
     [ApiController]
     [Route("api/User")]
     [AllowAnonymous]
@@ -29,7 +35,14 @@ namespace AdeCartAPI.Controllers
             this.login = login;
             this.passwordHasher = passwordHasher;
         }
-
+        ///<param name="newuser">
+        ///an object to sign up a user
+        ///</param>
+        /// <summary>
+        /// Sign up a new user
+        /// </summary>
+        /// 
+        /// <returns>A string status</returns>
         //The Function creates a new user
         //using user manager library
         //then logins in the newly created user
@@ -55,7 +68,17 @@ namespace AdeCartAPI.Controllers
             }
             return this.StatusCode(StatusCodes.Status400BadRequest, "Password not equal,retype password");
         }
-        
+        ///<param name="username">
+        ///\a user's username
+        ///</param>
+        ///<param name="token">
+        ///a token to confirm user's email
+        ///</param>
+        /// <summary>
+        ///email confrimation
+        /// </summary>
+        /// 
+        /// <returns>A string status</returns>
         [HttpPost("{username}/emailconfirmation")]
         public async Task<ActionResult> VerifyEmailToken(Token token,string username) 
         {
@@ -71,7 +94,14 @@ namespace AdeCartAPI.Controllers
                 return this.StatusCode(StatusCodes.Status400BadRequest, "Invalid Token");
             }
         }
-        
+        ///<param name="model">
+        ///an object to login a user
+        ///</param>
+        /// <summary>
+        ///Login a  user
+        /// </summary>
+        /// 
+        /// <returns>A string status</returns>
         //This function sign in existing user
         //by using the signin manager library.
         [HttpPost("login")]
@@ -92,9 +122,16 @@ namespace AdeCartAPI.Controllers
 
             return BadRequest("password is not correct");
         }
-        
-        
-     
+
+        ///<param name="username">
+        ///\a user's username
+        ///</param>
+        /// <summary>
+        ///reset password
+        /// </summary>
+        /// 
+        /// <returns>A string status</returns>
+
         //To generate the token to reset password
         [HttpGet("{username}/password/reset")]
         public async Task<ActionResult> ResetPassword(string username) 
@@ -104,7 +141,17 @@ namespace AdeCartAPI.Controllers
             var passwordResetToken = await user.GeneratePasswordResetTokenAsync(currentUser);
             return Ok($"Reset Password Token {passwordResetToken}");
         }
-
+        ///<param name="username">
+        ///\a user's username
+        ///</param>
+        ///<param name="resetPassword">
+        ///an object to reset a password
+        ///</param>
+        /// <summary>
+        ///verify token/reset password confirmation
+        /// </summary>
+        /// 
+        /// <returns>A string status</returns>
         //To verify the Password reset token
         //which gives access to change the user's password
         [HttpPost("{username}/password/verifytoken")]
@@ -124,7 +171,17 @@ namespace AdeCartAPI.Controllers
                 return BadRequest(isVerifyResult.Errors);
             }
         }
-
+        ///<param name="username">
+        ///\a user's username
+        ///</param>
+        ///<param name="phoneNumber">
+        ///an object used to add user's phonenumber
+        ///</param>
+        /// <summary>
+        ///Add phonenumber
+        /// </summary>
+        /// 
+        /// <returns>A string status</returns>
         [HttpPost("{username}/phonenumber/add")]
         public async Task<ActionResult<User>> AddPhoneNumber(UserNumber phoneNumber,string username) 
         {
@@ -140,7 +197,17 @@ namespace AdeCartAPI.Controllers
                 return BadRequest(result.Errors);
             }
         }
-
+        ///<param name="username">
+        ///\a user's username
+        ///</param>
+        ///<param name="phoneNumber">
+        ///an object used to change user's phonenumber
+        ///</param>
+        /// <summary>
+        /// change phonenumber
+        /// </summary>
+        /// 
+        /// <returns>A string status</returns>
         [HttpGet("{username}/phonenumber/change")]
         public async Task<ActionResult<User>> ChangePhonenumber(string username,UserNumber phoneNumber) 
         {
@@ -157,7 +224,17 @@ namespace AdeCartAPI.Controllers
                 return BadRequest(result.Errors);
             }
         }
-
+        ///<param name="username">
+        ///\a user's username
+        ///</param>
+        ///<param name="name">
+        ///an object used to change user's username
+        ///</param>
+        /// <summary>
+        /// change username
+        /// </summary>
+        /// 
+        /// <returns>A string status</returns>
         [HttpPost("{username}/change")]
         public async Task<ActionResult<User>> ChangeUsername(UserName name,string username) 
         {
@@ -173,7 +250,14 @@ namespace AdeCartAPI.Controllers
                 return BadRequest(result.Errors);
             }
         }
-
+        ///<param name="username">
+        ///\a user's username
+        ///</param>
+        /// <summary>
+        /// sign out user
+        /// </summary>
+        /// 
+        /// <returns>A string status</returns>
         //To sign out a user
         [HttpPost("{username}/signout")]
         public async Task<ActionResult> Signout(string username)

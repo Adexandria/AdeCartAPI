@@ -6,13 +6,20 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace AdeCartAPI.Controllers
+
 {
+    [SwaggerResponse((int)HttpStatusCode.OK, "Returns if sucessful")]
+    [SwaggerResponse((int)HttpStatusCode.NotFound, "Returns if not found")]
+    [SwaggerResponse((int)HttpStatusCode.NoContent, "Returns no content")]
+
     [Route("api/{username}/carts/{cartId}/orders")]         
     [ApiController]
     [Authorize]
@@ -32,7 +39,17 @@ namespace AdeCartAPI.Controllers
             this._cart = _cart;
             this._Item = _Item;
         }
-
+        ///<param name="username">
+        ///the user's username
+        ///</param>
+        ///<param name="cartId">
+        ///the user's cart id
+        ///</param>
+        /// <summary>
+        /// get all orders
+        /// </summary>
+        /// 
+        /// <returns>A string status</returns>
         [HttpGet]
         public async Task<ActionResult> GetOrders(string username,int cartId) 
         {
@@ -48,6 +65,20 @@ namespace AdeCartAPI.Controllers
             var mappedOrders = mapper.Map<List<OrderDTO>>(currentOrders);
             return Ok(mappedOrders);
         }
+        ///<param name="username">
+        ///the user's username
+        ///</param>
+        ///<param name="cartId">
+        ///the user's cart id
+        ///</param>
+        ///<param name="orderId">
+        ///the user's order id
+        ///</param>
+        /// <summary>
+        /// to get an individual order
+        /// </summary>
+        /// 
+        /// <returns>A string status</returns>
         [HttpGet("{orderId}")]
         public async Task<ActionResult> GetOrder(string username, int cartId,int orderId) 
         {
@@ -65,6 +96,20 @@ namespace AdeCartAPI.Controllers
             var mappedOrder = mapper.Map<OrderDTO>(currentOrder);
             return Ok(mappedOrder);
         }
+        ///<param name="username">
+        ///the user's username
+        ///</param>
+        ///<param name="cartId">
+        ///the user's cart id
+        ///</param>
+        ///<param name="newOrder">
+        ///an object to create new order
+        ///</param>
+        /// <summary>
+        /// create a new order
+        /// </summary>
+        /// 
+        /// <returns>A string status</returns>
         [HttpPost]
         public async Task<ActionResult> AddOrder(string username, int cartId,OrderCreate newOrder) 
         {
@@ -90,6 +135,24 @@ namespace AdeCartAPI.Controllers
             await _order.AddOrder(mappedOrder);
             return Ok("Created");
         }
+        ///<param name="username">
+        ///the user's username
+        ///</param>
+        ///<param name="cartId">
+        ///the user's cart id
+        ///</param>
+        ///<param name="updateOrder">
+        ///an object used to update an order
+        ///</param>
+        ///<param name="orderId">
+        ///the user's order id
+        ///</param>
+        /// <summary>
+        /// Updates an order
+        /// </summary>
+        /// 
+        /// 
+        /// <returns>A string status</returns>
         [HttpPut("{orderId}")]
         public async Task<ActionResult> UpdateOrder(string username, int cartId,int orderId,OrderUpdate updateOrder) 
         {
@@ -109,7 +172,21 @@ namespace AdeCartAPI.Controllers
             await _order.UpdateOrder(updatedOrder);
             return NoContent();
         }
-
+        ///<param name="username">
+        ///the user's username
+        ///</param>
+        ///<param name="cartId">
+        ///the user's cart id
+        ///</param>
+        ///<param name="orderId">
+        ///the user's order id
+        ///</param>
+        /// <summary>
+        /// Delete an order
+        /// </summary>
+        /// 
+        /// 
+        /// <returns>A string status</returns>
         [HttpDelete("{orderId}")]
         public async Task<ActionResult> DeleteOrder(string username, int cartId, int orderId) 
         {

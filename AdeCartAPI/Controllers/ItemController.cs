@@ -3,15 +3,18 @@ using AdeCartAPI.Model;
 using AdeCartAPI.Service;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
+using Swashbuckle.AspNetCore.Annotations;
 using System.Collections.Generic;
-using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace AdeCartAPI.Controllers
 {
+    [SwaggerResponse((int)HttpStatusCode.OK, "Returns if sucessful")]
+    [SwaggerResponse((int)HttpStatusCode.NotFound, "Returns if not found")]
+    [SwaggerResponse((int)HttpStatusCode.NoContent, "Returns no content")]
+
     [Route("api/items")]
     [ApiController]
     public class ItemController : ControllerBase
@@ -23,7 +26,14 @@ namespace AdeCartAPI.Controllers
             this._Item = _Item;
             this.mapper = mapper;
         }
-
+       
+        
+        
+        /// <summary>
+        /// Get all items
+        /// </summary>
+        /// 
+        /// <returns>A string status</returns>
         [AllowAnonymous]
         [HttpGet]
         public ActionResult<List<ItemDTO>> GetItems()
@@ -33,6 +43,15 @@ namespace AdeCartAPI.Controllers
             return Ok(currentItems);
         }
 
+        ///<param name="itemName">
+        ///the item name
+        ///</param>
+        /// <summary>
+        ///Get an individual item
+        /// </summary>
+        /// 
+        /// <returns>A string status</returns>
+
         [AllowAnonymous]
         [HttpGet("{itemName}", Name = "GetItem")]
         public ActionResult<ItemDTO> GetItem(string itemName)
@@ -41,7 +60,13 @@ namespace AdeCartAPI.Controllers
             var currentItem = mapper.Map<ItemDTO>(item);
             return Ok(currentItem);
         }
-
+        ///<param name="itemCreate">
+        ///an object used to create item
+        ///</param>
+        /// <summary>
+        /// create a new item
+        /// </summary>
+        /// 
         [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<ActionResult<ItemDTO>> AddItem(ItemCreate itemCreate)
@@ -53,6 +78,14 @@ namespace AdeCartAPI.Controllers
             return CreatedAtRoute("GetItem", new { itemName = currentItem.Name}, currentItem);
 
         }
+        ///<param name="itemUpdate">
+        ///an object used to update item
+        ///</param>
+        /// <summary>
+        /// update an existing Item
+        /// </summary>
+        /// 
+        /// <returns>A string status</returns>
         [Authorize(Roles = "Admin")]
         [HttpPut]
         public async Task<ActionResult> UpdateItem(ItemUpdate itemUpdate)
@@ -63,7 +96,13 @@ namespace AdeCartAPI.Controllers
             await _Item.UpdateItem(currentItem);
             return Ok("Successful");
         }
-
+        ///<param name="itemName">
+        ///an item Name
+        ///</param>
+        /// <summary>
+        /// delete an existing Item
+        /// </summary>
+        /// 
         [Authorize(Roles = "Admin")]
         [HttpDelete("{itemName}")]
         public async Task<ActionResult> DeleteItem(string itemName) 
@@ -73,6 +112,7 @@ namespace AdeCartAPI.Controllers
             await _Item.DeleteItem(item.ItemId);
             return NoContent();
         } 
+
         private Item UpdateItem(ItemUpdate itemUpdate,Item item) 
         {
             if(itemUpdate.Name != null) 
