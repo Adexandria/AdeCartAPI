@@ -1,4 +1,5 @@
-﻿using AdeCartAPI.Model;
+﻿using AdeCartAPI.DTO;
+using AdeCartAPI.Model;
 using AdeCartAPI.Service;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
@@ -42,26 +43,57 @@ namespace AdeCartAPI.Controllers
             this._Item = _Item;
         }
         [HttpPost]
-        public async Task<ActionResult> PayCharge(string username,int cartId,int orderId) 
-        {  
-            GetSecrets();
-            var currentUser = await GetUser(username);
-            if (currentUser == null) return NotFound();
+        public async Task<ActionResult> PayCharge(string username,int cartId,int orderId)
+        {
+            try
+            {
+                GetSecrets();
+                var currentUser = await GetUser(username);
+                if (currentUser == null) return NotFound();
 
-            var cart = _cart.GetCart(cartId, currentUser.Id);
-            if (cart == null) await _cart.AddCart(currentUser.Id);
+                var cart = _cart.GetCart(cartId, currentUser.Id);
+                if (cart == null) return NotFound();
+                if (cart.OrderStatus == 1) return BadRequest("Order is been processed");
+                var currentOrder = _order.GetOrder(orderId);
+                if (currentOrder.OrderId == 0) return NotFound();
 
-            var currentOrder = _order.GetOrder(orderId);
-            if (currentOrder.OrderId == 0) return NotFound();
-            var price = GetPrice(currentOrder);
-            var charge = SetCharge(price, currentUser.Email);
-            var pendingCharge = await InitializeCharge(charge);
-            verification = JsonConvert.DeserializeObject<Verification>(pendingCharge);
-            var pin = CreatePin(verification.Data.Reference);
-            var reciept = await Submit_Pin(pin); 
-            return Ok(reciept);
+                var price = GetPrice(currentOrder);
+
+                var charge = SetCharge(price, currentUser.Email);
+
+                var pendingCharge = await InitializeCharge(charge);
+                verification = JsonConvert.DeserializeObject<Verification>(pendingCharge);
+                var pin = CreatePin(verification.Data.Reference);
+
+                var content = await Submit_Pin(pin);
+
+                var status = JsonConvert.DeserializeObject<Reciept>(content).Data.Status;
+                if (status == "success")
+                {
+                    await UpdateOrder(cart);
+                    await UpdateItem(currentOrder);
+                    return Ok("Successful, Your order is been processed");
+                }
+                return BadRequest("Try Again");
+            } 
+            catch(Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+           
+            
         }
-
+        private async Task UpdateOrder(OrderCartData cart) 
+        {
+            var orderCart = mapper.Map<OrderCart>(cart);
+            orderCart.OrderStatus = OrderStatus.Processing;
+            await _cart.UpdateCart(orderCart);  
+        }
+        private async Task UpdateItem(Order order) 
+        {
+            order.Item.AvailableItem = order.Item.AvailableItem - order.Quantity;
+            await _Item.UpdateItem(order.Item);
+        }
        
         private Charge SetCharge(int price,string email) 
         {
@@ -89,23 +121,6 @@ namespace AdeCartAPI.Controllers
                 return e.Message;
             }
 
-        }
-
-        private async Task<string> Submit(OTP otp)
-        {
-            try
-            {
-                HttpClient client = GetClient();
-                var url = endpoint + "/submit_otp";
-                HttpResponseMessage httpResponse = new HttpResponseMessage();
-                var json = JsonConvert.SerializeObject(otp);
-                return await GetContent(httpResponse, json, url, client);
-            }
-            catch (Exception e)
-            {
-
-                return e.Message;
-            }
         }
 
         private async Task<string> InitializeCharge(Charge charge)
@@ -136,6 +151,7 @@ namespace AdeCartAPI.Controllers
             var newContent = JToken.Parse(contentString).ToString();
             return newContent;
         }
+
         private Pin CreatePin(string reference)
         {
             Pin pin = new Pin
@@ -144,14 +160,7 @@ namespace AdeCartAPI.Controllers
             };
             return pin;
         }
-        private OTP CreateOTP(string reference) 
-        {
-            OTP otp = new OTP
-            {
-                Reference = reference
-            };
-            return otp;
-        }
+
         private int GetPrice(Order currentOrder) 
         {
             currentOrder = GetOrder(currentOrder);
