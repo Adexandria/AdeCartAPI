@@ -13,6 +13,7 @@ namespace AdeCartAPI.Model
         [ForeignKey("OrderCartId")]
         public int OrderCartId { get; set; }
         public virtual OrderCart Cart { get; set; }
+        public int Quantity { get; set; } = 1;
        
     }
 }
