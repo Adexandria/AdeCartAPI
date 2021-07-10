@@ -116,6 +116,10 @@ namespace AdeCartAPI.Controllers
         private async Task UpdateItem(Order order) 
         {
             order.Item.AvailableItem = order.Item.AvailableItem - order.Quantity;
+            if(order.Item.AvailableItem == 0) 
+            {
+                await _Item.DeleteItem(order.ItemId);
+            }
             await _Item.UpdateItem(order.Item);
         }
        
