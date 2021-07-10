@@ -234,13 +234,11 @@ namespace AdeCartAPI.Controllers
         }
         private List<Order> GetOrders(List<Order> currentOrder) 
         {
-            var items = _Item.GetItems;
-            foreach(var item in items)
+
+            foreach (var order in currentOrder)
             {
-               foreach(var order in currentOrder) 
-               {
-                    order.Item = item;
-               }
+                var item = _Item.GetItemById(order.ItemId);
+                order.Item = item;
             }
             return currentOrder;
         } 
