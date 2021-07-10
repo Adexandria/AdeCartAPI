@@ -1,11 +1,7 @@
-﻿
-using AdeCartAPI.DTO;
+﻿using AdeCartAPI.DTO;
 using AdeCartAPI.Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-
+using System.Collections.Generic;
 namespace AdeCartAPI.Service
 {
     public interface IOrderCart
