@@ -68,6 +68,7 @@ namespace AdeCartAPI.Controllers
             var currentUser = await GetUser(username);
             if (currentUser == null) return NotFound();
             var cart = _cart.GetCart(id,currentUser.Id);
+            if (cart.OrderCartId == 0) return NotFound();
             var mappedCart = mapper.Map<OrderCart>(cart);
             var mappedCartDTO = mapper.Map<OrderCartDTO>(mappedCart);
             return Ok(mappedCartDTO);
