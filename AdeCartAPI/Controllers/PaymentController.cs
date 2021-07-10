@@ -123,7 +123,7 @@ namespace AdeCartAPI.Controllers
         {
             var charge = new Charge
             {
-                Amount = (price * 10000).ToString(),
+                Amount = (price).ToString(),
                 Email = email,
                 CardDetails = new Card()
             };
@@ -188,7 +188,7 @@ namespace AdeCartAPI.Controllers
         private int GetPrice(Order currentOrder) 
         {
             currentOrder = GetOrder(currentOrder);
-            int price = currentOrder.Quantity * currentOrder.Item.AvailableItem;
+            int price = currentOrder.Quantity * currentOrder.Item.ItemPrice;
             return price;
         }
 
