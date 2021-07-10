@@ -1,4 +1,5 @@
 ﻿using AdeCartAPI.Model;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -10,13 +11,17 @@ namespace AdeCartAPI.Service
 {
     public class ItemRepository : ITemInterface
     {
-        readonly string connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Database=AdeCart;Integrated Security=True;";
-
+        readonly SqlService sqlService;
+        public ItemRepository(SqlService sqlService)
+        {
+            this.sqlService = sqlService;
+        }
+        
         public List<Item> GetItems
         {
             get
             {
-                var sqlConnection = CreateConnection();
+                var sqlConnection = sqlService.CreateConnection();
                 var items = new List<Item>();
                 var sqlCommand = new SqlCommand("Item_GetItems", sqlConnection)
                 {
@@ -46,7 +51,7 @@ namespace AdeCartAPI.Service
         public async Task AddItem(Item item)
         {
 
-            var sqlConnection = CreateConnection();
+            var sqlConnection = sqlService.CreateConnection();
             var sqlCommand = new SqlCommand("Item_Insert", sqlConnection)
             {
                 CommandType = CommandType.StoredProcedure
@@ -63,7 +68,7 @@ namespace AdeCartAPI.Service
         public async Task DeleteItem(int itemId)
         {
 
-            var sqlConnection = CreateConnection();
+            var sqlConnection = sqlService.CreateConnection();
             var sqlCommand = new SqlCommand("Item_Delete", sqlConnection)
             {
                 CommandType = System.Data.CommandType.StoredProcedure
@@ -76,8 +81,8 @@ namespace AdeCartAPI.Service
 
         public Item GetItem(string itemName)
         {
-            var sqlConnection = CreateConnection();
-           
+            var sqlConnection = sqlService.CreateConnection();
+
             var sqlCommand = new SqlCommand("Item_GetItem", sqlConnection)
             {
                 CommandType = CommandType.StoredProcedure
@@ -106,7 +111,7 @@ namespace AdeCartAPI.Service
         }
         public Item GetItemById(int itemId)
         {
-            var sqlConnection = CreateConnection();
+            var sqlConnection = sqlService.CreateConnection();
 
             var sqlCommand = new SqlCommand("Item_GetItemById", sqlConnection)
             {
@@ -136,7 +141,7 @@ namespace AdeCartAPI.Service
         }
         public async Task UpdateItem(Item updateItem)
         {
-            var sqlConnection = CreateConnection();
+            var sqlConnection = sqlService.CreateConnection();
             var sqlCommand = new SqlCommand("Item_Update", sqlConnection)
             {
                 CommandType = CommandType.StoredProcedure
@@ -150,10 +155,6 @@ namespace AdeCartAPI.Service
             await sqlCommand.ExecuteNonQueryAsync();
             sqlConnection.Close();
         }
-        private SqlConnection CreateConnection()
-        {
-            SqlConnection sqlConnection = new SqlConnection(connectionString);
-            return sqlConnection;
-        }
+       
     }
 }

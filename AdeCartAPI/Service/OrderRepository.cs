@@ -1,20 +1,23 @@
 ﻿using AdeCartAPI.Model;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace AdeCartAPI.Service
 {
     public class OrderRepository : IOrder
     {
-        readonly string connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Database=AdeCart;Integrated Security=True;";
-
+        readonly SqlService sqlService;
+        public OrderRepository(SqlService sqlService)
+        {
+            this.sqlService=sqlService;
+        }
         public async Task AddOrder(Order order)
         {
-            var sqlConnection = CreateConnection();
+            var sqlConnection = sqlService.CreateConnection();
             var sqlCommand = new SqlCommand("Order_Insert", sqlConnection)
             {
                 CommandType = CommandType.StoredProcedure
@@ -29,8 +32,7 @@ namespace AdeCartAPI.Service
 
         public async Task DeleteOrder(int orderId)
         {
-            var sqlConnection = CreateConnection();
-            var order = new Order();
+            var sqlConnection = sqlService.CreateConnection();
             var sqlCommand = new SqlCommand("Order_Delete", sqlConnection)
             {
                 CommandType = CommandType.StoredProcedure
@@ -43,7 +45,7 @@ namespace AdeCartAPI.Service
 
         public Order GetOrder(int orderId)
         {
-            var sqlConnection = CreateConnection();
+            var sqlConnection = sqlService.CreateConnection();
             var order = new Order();
             var sqlCommand = new SqlCommand("Order_GetOrder", sqlConnection)
             {
@@ -68,7 +70,7 @@ namespace AdeCartAPI.Service
 
         public List<Order> GetOrders(int OrderCartId)
         {
-            var sqlConnection = CreateConnection();
+            var sqlConnection = sqlService.CreateConnection();
             var orders = new List<Order>();
             var sqlCommand = new SqlCommand("Order_GetOrders", sqlConnection)
             {
@@ -96,7 +98,7 @@ namespace AdeCartAPI.Service
 
         public async  Task UpdateOrder(Order order)
         {
-            var sqlConnection = CreateConnection();
+            var sqlConnection = sqlService.CreateConnection();
             var sqlCommand = new SqlCommand("Order_Update", sqlConnection)
             {
                 CommandType = CommandType.StoredProcedure
@@ -109,10 +111,6 @@ namespace AdeCartAPI.Service
             await sqlCommand.ExecuteNonQueryAsync();
             sqlConnection.Close();
         }
-        private SqlConnection CreateConnection()
-        {
-            SqlConnection sqlConnection = new SqlConnection(connectionString);
-            return sqlConnection;
-        }
+       
     }
 }
