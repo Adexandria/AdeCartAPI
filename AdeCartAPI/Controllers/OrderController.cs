@@ -1,17 +1,15 @@
-﻿using AdeCartAPI.DTO;
+﻿using System;
+using AutoMapper;
+using System.Net;
+using AdeCartAPI.DTO;
 using AdeCartAPI.Model;
 using AdeCartAPI.Service;
-using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Swashbuckle.AspNetCore.Annotations;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Authorization;
+using Swashbuckle.AspNetCore.Annotations;
+
 
 namespace AdeCartAPI.Controllers
 
@@ -19,6 +17,7 @@ namespace AdeCartAPI.Controllers
     [SwaggerResponse((int)HttpStatusCode.OK, "Returns if sucessful")]
     [SwaggerResponse((int)HttpStatusCode.NotFound, "Returns if not found")]
     [SwaggerResponse((int)HttpStatusCode.NoContent, "Returns no content")]
+    [SwaggerResponse((int)HttpStatusCode.BadRequest)]
 
     [Route("api/{username}/carts/{cartId}/orders")]         
     [ApiController]
@@ -29,13 +28,13 @@ namespace AdeCartAPI.Controllers
         readonly IOrderCart _cart;
         readonly IMapper mapper;
         readonly ITemInterface _Item;
-        readonly UserManager<User> user;
+        readonly AdeCartService cartService;
 
-        public OrderController(IOrder _order, IMapper mapper, UserManager<User> user, IOrderCart _cart, ITemInterface _Item)
+        public OrderController(IOrder _order, IMapper mapper, AdeCartService cartService, IOrderCart _cart, ITemInterface _Item)
         {
             this._order = _order;
             this.mapper = mapper;
-            this.user = user;
+            this.cartService = cartService;
             this._cart = _cart;
             this._Item = _Item;
         }
@@ -51,19 +50,28 @@ namespace AdeCartAPI.Controllers
         /// 
         /// <returns>A string status</returns>
         [HttpGet]
-        public async Task<ActionResult> GetOrders(string username,int cartId) 
+        public async Task<ActionResult> GetOrders(string username,int cartId)
         {
-            var currentUser = await GetUser(username);
-            if (currentUser == null) return NotFound();
+            try
+            {
+                var currentUser = await cartService.GetUser(username);
+                if (currentUser == null) return NotFound();
 
-            var carts = _cart.GetCarts(currentUser.Id);
-            if(carts == null) await _cart.AddCart(currentUser.Id);
+                var carts = _cart.GetCarts(currentUser.Id);
+                if (carts == null) await _cart.AddCart(currentUser.Id);
 
-            var currentOrders = _order.GetOrders(cartId);
-            currentOrders = GetOrders(currentOrders);
+                var currentOrders = _order.GetOrders(cartId);
+                currentOrders = cartService.GetOrders(currentOrders);
 
-            var mappedOrders = mapper.Map<List<OrderDTO>>(currentOrders);
-            return Ok(mappedOrders);
+                var mappedOrders = mapper.Map<List<OrderDTO>>(currentOrders);
+                return Ok(mappedOrders);
+            }
+            catch (Exception e)
+            {
+
+                return BadRequest(e.Message);
+            }
+            
         }
         ///<param name="username">
         ///the user's username
@@ -82,19 +90,28 @@ namespace AdeCartAPI.Controllers
         [HttpGet("{orderId}")]
         public async Task<ActionResult> GetOrder(string username, int cartId,int orderId) 
         {
-            var currentUser = await GetUser(username);
-            if (currentUser == null) return NotFound();
+            try
+            {
+                var currentUser = await cartService.GetUser(username);
+                if (currentUser == null) return NotFound();
 
-            var cart = _cart.GetCart(cartId,currentUser.Id);
-            if (cart == null) await _cart.AddCart(currentUser.Id);
+                var cart = _cart.GetCart(cartId, currentUser.Id);
+                if (cart == null) await _cart.AddCart(currentUser.Id);
 
-            var currentOrder = _order.GetOrder(orderId);
-            if (currentOrder.OrderId == 0) return NotFound();
+                var currentOrder = _order.GetOrder(orderId);
+                if (currentOrder.OrderId == 0) return NotFound();
 
-            currentOrder = GetOrder(currentOrder);
+                currentOrder = cartService.GetOrder(currentOrder);
 
-            var mappedOrder = mapper.Map<OrderDTO>(currentOrder);
-            return Ok(mappedOrder);
+                var mappedOrder = mapper.Map<OrderDTO>(currentOrder);
+                return Ok(mappedOrder);
+            }
+            catch (Exception e)
+            {
+
+                return BadRequest(e.Message);
+            }
+            
         }
         ///<param name="username">
         ///the user's username
@@ -113,27 +130,36 @@ namespace AdeCartAPI.Controllers
         [HttpPost]
         public async Task<ActionResult> AddOrder(string username, int cartId,OrderCreate newOrder) 
         {
-            var currentUser = await GetUser(username);
-            if (currentUser == null) return NotFound();
+            try
+            {
+                var currentUser = await cartService.GetUser(username);
+                if (currentUser == null) return NotFound();
 
-            var cart = _cart.GetCart(cartId, currentUser.Id);
-            if (cart == null) await _cart.AddCart(currentUser.Id);
+                var cart = _cart.GetCart(cartId, currentUser.Id);
+                if (cart == null) await _cart.AddCart(currentUser.Id);
 
-            cartId = IsAllow(cart);
-            if(cartId == 0) return BadRequest("Wrong Cart!!!");
+                cartId = cartService.IsAllow(cart);
+                if (cartId == 0) return BadRequest("Wrong Cart!!!");
 
-            var item = _Item.GetItemById(newOrder.ItemId);
-            if (item == null) return NotFound("Item doesn't exist");
+                var item = _Item.GetItemById(newOrder.ItemId);
+                if (item == null) return NotFound("Item doesn't exist");
 
-            var quantity = IsQuantity(item.AvailableItem, newOrder.Quantity);
+                var quantity = cartService.IsQuantity(item.AvailableItem, newOrder.Quantity);
 
-            var mappedOrder = mapper.Map<Order>(newOrder);
+                var mappedOrder = mapper.Map<Order>(newOrder);
 
-            mappedOrder.OrderCartId = cartId;
-            mappedOrder.Quantity = quantity;
+                mappedOrder.OrderCartId = cartId;
+                mappedOrder.Quantity = quantity;
 
-            await _order.AddOrder(mappedOrder);
-            return Ok("Created");
+                await _order.AddOrder(mappedOrder);
+                return Ok("Created");
+            }
+            catch (Exception e)
+            {
+
+                return BadRequest(e.Message);
+            }
+            
         }
         ///<param name="username">
         ///the user's username
@@ -154,23 +180,33 @@ namespace AdeCartAPI.Controllers
         /// 
         /// <returns>A string status</returns>
         [HttpPut("{orderId}")]
-        public async Task<ActionResult> UpdateOrder(string username, int cartId,int orderId,OrderUpdate updateOrder) 
+        public async Task<ActionResult> UpdateOrder(string username, int cartId,int orderId,OrderUpdate updateOrder)
         {
-            var currentUser = await GetUser(username);
-            if (currentUser == null) return NotFound();
+            try
+            {
+                var currentUser = await cartService.GetUser(username);
+                if (currentUser == null) return NotFound();
 
-            var cart = _cart.GetCart(cartId, currentUser.Id);
-            if (cart == null) await _cart.AddCart(currentUser.Id);
+                var cart = _cart.GetCart(cartId, currentUser.Id);
+                if (cart == null) await _cart.AddCart(currentUser.Id);
 
-            var currentOrder = _order.GetOrder(orderId);
-            if(currentOrder == null) return NotFound();
+                var currentOrder = _order.GetOrder(orderId);
+                if (currentOrder == null) return NotFound();
 
-            var item = _Item.GetItemById(updateOrder.ItemId);
-            if (item == null) return NotFound("Item doesn't exist");
+                var item = _Item.GetItemById(updateOrder.ItemId);
+                if (item == null) return NotFound("Item doesn't exist");
 
-            var updatedOrder = UpdateOrder(updateOrder.ItemId, cartId, orderId,updateOrder.Quantity);
-            await _order.UpdateOrder(updatedOrder);
-            return NoContent();
+                var updatedOrder = cartService.UpdateOrder(updateOrder.ItemId, cartId, orderId, updateOrder.Quantity);
+                await _order.UpdateOrder(updatedOrder);
+                return NoContent();
+
+            }
+            catch (Exception e )
+            {
+
+                return BadRequest(e.Message);
+            }
+           
         }
         ///<param name="username">
         ///the user's username
@@ -190,63 +226,29 @@ namespace AdeCartAPI.Controllers
         [HttpDelete("{orderId}")]
         public async Task<ActionResult> DeleteOrder(string username, int cartId, int orderId) 
         {
-            var currentUser = await GetUser(username);
-            if (currentUser == null) return NotFound();
-
-            var cart = _cart.GetCart(cartId, currentUser.Id);
-            if (cart == null)await _cart.AddCart(currentUser.Id);
-
-            var currentOrder = _order.GetOrder(orderId);
-            if (currentOrder == null)return NotFound();
-
-            await _order.DeleteOrder(orderId);
-            return Ok();
-        }
-        private async Task<User> GetUser(string userName)
-        {
-            return await user.FindByNameAsync(userName);
-        }
-        private Order UpdateOrder(int itemId,int cartId,int orderId,int quantity) 
-        {
-            var updateOrder = new Order
+            try
             {
-                ItemId = itemId,
-                OrderCartId = cartId,
-                OrderId = orderId,
-                Quantity = quantity
-            };
-            return updateOrder;
-        }
-        private int IsAllow(OrderCartData cart) 
-        {
-            if(cart.OrderStatus == 0) 
-            return cart.OrderCartId;
-            return 0;
-        }
-        private int IsQuantity(int availableItem,int quantity)
-        {
-            if(quantity > availableItem) 
-            {
-                quantity = availableItem;
-                return quantity;
+                var currentUser = await cartService.GetUser(username);
+                if (currentUser == null) return NotFound();
+
+                var cart = _cart.GetCart(cartId, currentUser.Id);
+                if (cart == null) await _cart.AddCart(currentUser.Id);
+
+                var currentOrder = _order.GetOrder(orderId);
+                if (currentOrder == null) return NotFound();
+
+                await _order.DeleteOrder(orderId);
+                return Ok();
             }
-            return quantity;
-        }
-        private List<Order> GetOrders(List<Order> currentOrder) 
-        {
-
-            foreach (var order in currentOrder)
+            catch (Exception e)
             {
-                var item = _Item.GetItemById(order.ItemId);
-                order.Item = item;
+
+                return BadRequest(e.Message);
             }
-            return currentOrder;
-        } 
-        private Order GetOrder(Order currentOrder) 
-        {
-            var item = _Item.GetItemById(currentOrder.ItemId);
-            currentOrder.Item = item;
-            return currentOrder;
         }
+       
+        
+        
+        
     }
 }
