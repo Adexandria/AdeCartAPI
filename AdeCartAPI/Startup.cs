@@ -17,7 +17,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 
 namespace AdeCartAPI
 {
@@ -25,6 +24,7 @@ namespace AdeCartAPI
     {
         private string paystack_Secret = null;
         private string paystack_Endpoint = null;
+        private string connectionString = null;
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -37,12 +37,14 @@ namespace AdeCartAPI
         {
             paystack_Secret = Configuration["paystack_Secret"];
             paystack_Endpoint = Configuration["paystack_Endpoint"];
-
+            connectionString = Configuration["ConnectionStrings:AdeCart"];
             services.AddControllers();
+            services.AddAuthentication();
             services.AddScoped<IAddress, AddressRepository>();
             services.AddScoped<ITemInterface, ItemRepository>();
             services.AddScoped<IOrderCart, OrderCartRepository>();
             services.AddScoped<IOrder, OrderRepository>();
+            services.AddSingleton<SqlService>();
             services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<IdentityDb>().AddSignInManager().AddDefaultTokenProviders();
 
             services.AddSwaggerGen(setupAction =>
@@ -71,11 +73,7 @@ namespace AdeCartAPI
 
             services.AddDbContext<IdentityDb>(opts =>
             {
-                opts.UseSqlServer(Configuration.GetConnectionString("AdeCart")).EnableSensitiveDataLogging();
-            });
-            services.AddDbContext<OrderDb>(opts =>
-            {
-                opts.UseSqlServer(Configuration.GetConnectionString("AdeCart")).EnableSensitiveDataLogging();
+                opts.UseSqlServer(Configuration.GetConnectionString(connectionString)).EnableSensitiveDataLogging();
             });
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.Configure<IdentityOptions>(options =>
@@ -118,7 +116,7 @@ namespace AdeCartAPI
             });
 
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
