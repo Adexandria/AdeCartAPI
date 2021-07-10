@@ -1,6 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AdeCartAPI.Model;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using AdeCartAPI.Model;
 
 namespace AdeCartAPI.UserService
 {
