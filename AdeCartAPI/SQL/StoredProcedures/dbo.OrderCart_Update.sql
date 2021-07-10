@@ -1,7 +1,7 @@
 ﻿CREATE PROCEDURE [dbo].[OrderCart_Update](
 	@OrderCartId     INT,
 	@UserId nvarchar(450),
-	 @OrderStatus int)
+	 @OrderStatus int) 
 AS
 BEGIN
    update OrderCart

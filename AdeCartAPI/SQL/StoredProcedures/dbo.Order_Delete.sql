@@ -1,8 +1,5 @@
 ﻿CREATE PROCEDURE [dbo].[Order_Delete](
-    @UserId      NVARCHAR (450),
-	@OrderId     INT,
-	@ItemId       INT,
-	@OrderStatus   INT)
+	@OrderId     INT) 
 AS
 BEGIN
   DELETE [dbo].[Order]

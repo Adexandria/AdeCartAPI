@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [dbo].[Order_GetOrders](
-    @OrderCartId   int)
+    @OrderCartId   int) 
 AS
 BEGIN
    SELECT * FROM [dbo].[Order]

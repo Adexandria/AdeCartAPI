@@ -1,9 +1,9 @@
 ﻿CREATE PROCEDURE [dbo].[Item_Update](
     @ItemId      int,
-    @ItemName    NCHAR(100),
+    @ItemName    NVARCHAR(450),
 	@ItemPrice   smallmoney,
 	@AvailableItem tinyint,
-    @ItemDescription      NCHAR (300))
+    @ItemDescription      NVARCHAR (450))
 AS
 BEGIN
    UPDATE Item
