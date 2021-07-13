@@ -31,7 +31,7 @@ namespace AdeCartAPI.Controllers
             this.mapper = mapper;
             this.cartService = cartService;
         }
-
+        
         ///<param name="username">
         ///the user's username
         ///</param>
@@ -50,9 +50,13 @@ namespace AdeCartAPI.Controllers
             {
                 var currentUser = await cartService.GetUser(username);
                 if (currentUser == null) return NotFound();
+
+                var isExist = address.GetAddressByUserId(currentUser.Id);
+                if (isExist != 0 ) return BadRequest("User Address already exist");
+
                 var newAddress = mapper.Map<UserAddress>(userAddress);
-                var userId = mapper.Map<UserAddress>(currentUser);
-                newAddress.UserId = userId.UserId;
+               
+                newAddress.UserId = currentUser.Id;
                 await address.CreateAddress(newAddress);
                 return Ok("Address successfully added");
             }
@@ -82,13 +86,15 @@ namespace AdeCartAPI.Controllers
             {
                 var currentUser = await cartService.GetUser(username);
                 if (currentUser == null) return NotFound();
+
                 var updateAddress = mapper.Map<UserAddress>(userAddress);
-                var isExist = address.GetAddress(updateAddress.AddressId);
-                if (isExist == 0) return NotFound("The address doesn't exist");
-                var userId = mapper.Map<UserAddress>(currentUser);
-                updateAddress.UserId = userId.UserId;
+
+                var addressId = address.GetAddressByUserId(currentUser.Id);
+                if (addressId == 0) return NotFound("The address doesn't exist");
+
+                updateAddress = cartService.InsertAddress(updateAddress, currentUser.Id, addressId);
                 await address.UpdateAddress(updateAddress);
-                return Ok();
+                return Ok("Sucessful");
             }
             catch (Exception e)
             {
@@ -97,6 +103,7 @@ namespace AdeCartAPI.Controllers
             }
             
         }
+
         ///<param name="username">
         ///the user's username
         ///</param>
@@ -115,8 +122,10 @@ namespace AdeCartAPI.Controllers
             {
                 var currentUser = await cartService.GetUser(username);
                 if (currentUser == null) return NotFound();
+
                 var isExist = address.GetAddress(id);
                 if (isExist == 0) return NotFound("The address doesn't exist");
+
                 await address.DeleteAddress(id);
                 return NoContent();
             }
