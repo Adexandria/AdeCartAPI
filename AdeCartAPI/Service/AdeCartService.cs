@@ -10,8 +10,7 @@ using System.Net.Http.Headers;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
-
-
+using AdeCartAPI.UserModel;
 
 namespace AdeCartAPI.Service
 {
@@ -39,6 +38,12 @@ namespace AdeCartAPI.Service
             return await user.FindByNameAsync(userName);
         }
 
+        public UserAddress InsertAddress(UserAddress address,string userId, int addressId) 
+        {
+            address.AddressId = addressId;
+            address.UserId = userId;
+            return address;
+        }
         public async Task UpdateOrder(OrderCartData cart)
         {
             var orderCart = mapper.Map<OrderCart>(cart);
