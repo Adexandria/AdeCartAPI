@@ -9,7 +9,7 @@ namespace AdeCartAPI.UserService
         Task UpdateAddress(UserAddress updatedAddress);
         Task DeleteAddress(int addressId);
         int GetAddress(int addressId);
-
+        int GetAddressByUserId(string userId);
 
     }
 }
