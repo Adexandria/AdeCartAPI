@@ -141,7 +141,8 @@ namespace AdeCartAPI.Controllers
                 var currentUser = await cartService.GetUser(username);
                 if (currentUser == null) return NotFound();
                 var cart = mapper.Map<OrderCart>(updatecart);
-                var currentCart = _cart.GetCart(updatecart.OrderCartId, currentUser.Id);
+                cart.UserId = currentUser.Id;
+                var currentCart = _cart.GetCart(cart.OrderCartId,cart.UserId);
                 if (currentCart == null) return NotFound();
                 await _cart.UpdateCart(cart);
                 return Ok("Successful");
