@@ -44,21 +44,24 @@ namespace AdeCartAPI.Service
             address.UserId = userId;
             return address;
         }
-        public async Task UpdateOrder(OrderCartData cart)
+        public async Task UpdateOrderCart(OrderCartData cart)
         {
             var orderCart = mapper.Map<OrderCart>(cart);
             orderCart.OrderStatus = OrderStatus.Processing;
             await _cart.UpdateCart(orderCart);
         }
 
-        public async Task UpdateItem(Order order)
+        public async Task UpdateItem(List<Order> orders)
         {
-            order.Item.AvailableItem = order.Item.AvailableItem - order.Quantity;
-            if (order.Item.AvailableItem == 0)
+            foreach(var order in orders) 
             {
-                await _Item.DeleteItem(order.ItemId);
+                order.Item.AvailableItem = order.Item.AvailableItem - order.Quantity;
+                if (order.Item.AvailableItem == 0)
+                {
+                    await _Item.DeleteItem(order.ItemId);
+                }
+                await _Item.UpdateItem(order.Item);
             }
-            await _Item.UpdateItem(order.Item);
         }
 
         public Charge SetCharge(int price, string email)
@@ -127,11 +130,14 @@ namespace AdeCartAPI.Service
             return pin;
         }
 
-        public int GetPrice(Order currentOrder)
+        public int GetPrice(List<Order> currentOrders)
         {
-            currentOrder = GetOrder(currentOrder);
-            int price = currentOrder.Quantity * currentOrder.Item.ItemPrice;
-            return price;
+            int price = 0;
+            foreach(var currentOrder in currentOrders) 
+            {
+                price = currentOrder.Quantity * currentOrder.Item.ItemPrice;
+            }
+           return price;
         }
 
         public void GetSecrets()
@@ -203,7 +209,7 @@ namespace AdeCartAPI.Service
             {
                 item.ItemPrice = itemUpdate.Price;
             }
-            if (string.IsNullOrEmpty(itemUpdate.Name)|| itemUpdate.Description != "string")
+            if (string.IsNullOrEmpty(itemUpdate.Description)|| itemUpdate.Description != "string")
             {
                 item.ItemDescription = itemUpdate.Description;
             }
