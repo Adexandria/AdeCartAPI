@@ -36,5 +36,11 @@
     <Folder Include="SQL\StoredProcedures\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="AdeCartAPI.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 
 </Project>
