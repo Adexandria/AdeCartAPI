@@ -18,6 +18,7 @@ namespace AdeCartAPI.Controllers
     [SwaggerResponse((int)HttpStatusCode.NotFound, "Returns if not found")]
     [SwaggerResponse((int)HttpStatusCode.NoContent, "Returns no content")]
     [SwaggerResponse((int)HttpStatusCode.BadRequest)]
+    [SwaggerResponse((int)HttpStatusCode.Unauthorized)]
 
     [Route("api/{username}/carts/{cartId}/orders")]         
     [ApiController]
@@ -55,10 +56,10 @@ namespace AdeCartAPI.Controllers
             try
             {
                 var currentUser = await cartService.GetUser(username);
-                if (currentUser == null) return NotFound();
+                if (currentUser == null) return NotFound("User not found");
 
-                var carts = _cart.GetCarts(currentUser.Id);
-                if (carts == null) await _cart.AddCart(currentUser.Id);
+                var cart = _cart.GetCart(cartId,currentUser.Id);
+                if (cart.OrderCartId == 0) return NotFound("Cart doesn't exist");
 
                 var currentOrders = _order.GetOrders(cartId);
                 currentOrders = cartService.GetOrders(currentOrders);
@@ -93,10 +94,10 @@ namespace AdeCartAPI.Controllers
             try
             {
                 var currentUser = await cartService.GetUser(username);
-                if (currentUser == null) return NotFound();
+                if (currentUser == null) return NotFound("User not found");
 
                 var cart = _cart.GetCart(cartId, currentUser.Id);
-                if (cart == null) await _cart.AddCart(currentUser.Id);
+                if (cart.OrderCartId == 0) return NotFound("Cart doesn't exist");
 
                 var currentOrder = _order.GetOrder(orderId);
                 if (currentOrder.OrderId == 0) return NotFound();
@@ -133,10 +134,10 @@ namespace AdeCartAPI.Controllers
             try
             {
                 var currentUser = await cartService.GetUser(username);
-                if (currentUser == null) return NotFound();
+                if (currentUser == null) return NotFound("User not found");
 
                 var cart = _cart.GetCart(cartId, currentUser.Id);
-                if (cart == null) await _cart.AddCart(currentUser.Id);
+                if (cart.OrderCartId == 0) return NotFound("Cart doesn't exist");
 
                 cartId = cartService.IsAllow(cart);
                 if (cartId == 0) return BadRequest("Wrong Cart!!!");
@@ -152,7 +153,7 @@ namespace AdeCartAPI.Controllers
                 mappedOrder.Quantity = quantity;
 
                 await _order.AddOrder(mappedOrder);
-                return Ok("Created");
+                return Ok("Created Successfully");
             }
             catch (Exception e)
             {
@@ -185,20 +186,20 @@ namespace AdeCartAPI.Controllers
             try
             {
                 var currentUser = await cartService.GetUser(username);
-                if (currentUser == null) return NotFound();
+                if (currentUser == null) return NotFound("User not found");
 
                 var cart = _cart.GetCart(cartId, currentUser.Id);
-                if (cart == null) await _cart.AddCart(currentUser.Id);
+                if (cart.OrderCartId == 0) return NotFound("Cart doesn't exist");
 
                 var currentOrder = _order.GetOrder(orderId);
-                if (currentOrder == null) return NotFound();
+                if (currentOrder.OrderId == 0) return NotFound();
 
                 var item = _Item.GetItemById(updateOrder.ItemId);
                 if (item == null) return NotFound("Item doesn't exist");
 
                 var updatedOrder = cartService.UpdateOrder(updateOrder.ItemId, cartId, orderId, updateOrder.Quantity);
                 await _order.UpdateOrder(updatedOrder);
-                return NoContent();
+                return Ok("Updated Successfully");
 
             }
             catch (Exception e )
@@ -229,16 +230,16 @@ namespace AdeCartAPI.Controllers
             try
             {
                 var currentUser = await cartService.GetUser(username);
-                if (currentUser == null) return NotFound();
+                if (currentUser == null) return NotFound("User not found");
 
                 var cart = _cart.GetCart(cartId, currentUser.Id);
-                if (cart == null) await _cart.AddCart(currentUser.Id);
+                if (cart.OrderCartId == 0) return NotFound("Cart doesn't exist");
 
                 var currentOrder = _order.GetOrder(orderId);
-                if (currentOrder == null) return NotFound();
+                if (currentOrder.OrderId == 0) return NotFound();
 
                 await _order.DeleteOrder(orderId);
-                return Ok();
+                return Ok("Successful");
             }
             catch (Exception e)
             {
