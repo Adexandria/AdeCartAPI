@@ -1,30 +1,22 @@
-﻿using AdeCartAPI.DTO;
+﻿using System;
+using System.Net;
+using Newtonsoft.Json;
 using AdeCartAPI.Model;
 using AdeCartAPI.Service;
-using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Swashbuckle.AspNetCore.Annotations;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Swashbuckle.AspNetCore.Annotations;
+
 
 namespace AdeCartAPI.Controllers
 {
     [SwaggerResponse((int)HttpStatusCode.OK, "Returns if sucessful")]
     [SwaggerResponse((int)HttpStatusCode.NotFound, "Returns if not found")]
     [SwaggerResponse((int)HttpStatusCode.BadRequest)]
+    [SwaggerResponse((int)HttpStatusCode.Unauthorized)]
 
-    [Route("api/{username}/carts/{cartId}/orders/{orderId}/payment")]
+    [Route("api/{username}/carts/{cartId}/orders/payment")]
     [ApiController]
     [Authorize]
     public class PaymentController : ControllerBase
@@ -46,9 +38,6 @@ namespace AdeCartAPI.Controllers
         ///<param name="cartId">
         ///the user's cart id
         ///</param>
-        ///<param name="orderId">
-        ///the user's order id
-        ///</param>
         /// <summary>
         /// Pay for order
         /// </summary>
@@ -56,23 +45,21 @@ namespace AdeCartAPI.Controllers
         /// 
         /// <returns>A string status</returns>
         [HttpPost]
-        public async Task<ActionResult> PayCharge(string username,int cartId,int orderId)
+        public async Task<ActionResult> PayCharge(string username,int cartId)
         {
             try
             {
                 cartService.GetSecrets();
 
                 var currentUser = await cartService.GetUser(username);
-                if (currentUser == null) return NotFound();
+                if (currentUser == null) return NotFound("Username not found");
 
                 var cart = _cart.GetCart(cartId, currentUser.Id);
-                if (cart == null) return NotFound();
+                if (cart.OrderCartId == 0) return NotFound("cart not found");
                 if (cart.OrderStatus == 1) return BadRequest("Order is been processed");
 
-                var currentOrder = _order.GetOrder(orderId);
-                if (currentOrder.OrderId == 0) return NotFound();
-
-                var price = cartService.GetPrice(currentOrder);
+                var orders = _order.GetOrders(cartId);
+                var price = cartService.GetPrice(orders);
 
                 var charge = cartService.SetCharge(price, currentUser.Email);
 
@@ -85,8 +72,8 @@ namespace AdeCartAPI.Controllers
                 var status = JsonConvert.DeserializeObject<Reciept>(content).Data.Status;
                 if (status == "success")
                 {
-                    await cartService.UpdateOrder(cart);
-                    await cartService.UpdateItem(currentOrder);
+                    await cartService.UpdateOrderCart(cart);
+                    await cartService.UpdateItem(orders);
                     return Ok("Successful, Your order is been processed");
                 }
                 return BadRequest("Try Again");
@@ -96,7 +83,6 @@ namespace AdeCartAPI.Controllers
                 return BadRequest(e.Message);
             }
            
-            
         }
        
 
