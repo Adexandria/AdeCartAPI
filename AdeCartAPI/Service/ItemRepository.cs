@@ -64,7 +64,7 @@ namespace AdeCartAPI.Service
             try
             {
                 var sqlConnection = sqlService.CreateConnection();
-                var sqlCommand = new SqlCommand("Item_Insert", sqlConnection)
+                var sqlCommand = new SqlCommand("Item_Insert1", sqlConnection)
                 {
                     CommandType = CommandType.StoredProcedure
                 };
