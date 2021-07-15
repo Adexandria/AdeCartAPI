@@ -14,8 +14,8 @@ namespace AdeCartAPI.Controllers
 {
     [SwaggerResponse((int)HttpStatusCode.OK, "Returns if sucessful")]
     [SwaggerResponse((int)HttpStatusCode.NotFound, "Returns if not found")]
-    [SwaggerResponse((int)HttpStatusCode.NoContent, "Returns no content")]
     [SwaggerResponse((int)HttpStatusCode.BadRequest)]
+    [SwaggerResponse((int)HttpStatusCode.Unauthorized)]
 
     [Route("api/user/{username}/address")]
     [ApiController]
@@ -49,7 +49,7 @@ namespace AdeCartAPI.Controllers
             try
             {
                 var currentUser = await cartService.GetUser(username);
-                if (currentUser == null) return NotFound();
+                if (currentUser == null) return NotFound("User doesn't exist");
 
                 var isExist = address.GetAddressByUserId(currentUser.Id);
                 if (isExist != 0 ) return BadRequest("User Address already exist");
@@ -127,7 +127,7 @@ namespace AdeCartAPI.Controllers
                 if (isExist == 0) return NotFound("The address doesn't exist");
 
                 await address.DeleteAddress(id);
-                return NoContent();
+                return Ok("Success");
             }
             catch (Exception e)
             {
