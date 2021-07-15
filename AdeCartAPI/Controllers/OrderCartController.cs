@@ -19,6 +19,7 @@ namespace AdeCartAPI.Controllers
     [SwaggerResponse((int)HttpStatusCode.NotFound, "Returns if not found")]
     [SwaggerResponse((int)HttpStatusCode.NoContent, "Returns no content")]
     [SwaggerResponse((int)HttpStatusCode.BadRequest)]
+    [SwaggerResponse((int)HttpStatusCode.Unauthorized)]
 
     [Route("api/{username}/carts")]
     [ApiController]
@@ -48,7 +49,8 @@ namespace AdeCartAPI.Controllers
             try
             {
                 var currentUser = await cartService.GetUser(username);
-                if (currentUser == null) return NotFound();
+                if (currentUser == null) return NotFound("User not found");
+
                 var carts = _cart.GetCarts(currentUser.Id);
                 var mappedCarts = mapper.Map<List<OrderCart>>(carts);
                 var mappedCartsDTO = mapper.Map<List<OrderCartsDTO>>(mappedCarts);
@@ -73,14 +75,16 @@ namespace AdeCartAPI.Controllers
         /// 
         /// <returns>A string status</returns>
         [HttpGet("{id}", Name ="OrderCart")]
-        public async Task<ActionResult> GetCart(int id,string username) 
+        public async Task<ActionResult> GetCart(string username,int id) 
         {
             try
             {
                 var currentUser = await cartService.GetUser(username);
-                if (currentUser == null) return NotFound();
+                if (currentUser == null) return NotFound("User not found");
+
                 var cart = _cart.GetCart(id, currentUser.Id);
-                if (cart.OrderCartId == 0) return NotFound();
+                if (cart.OrderCartId == 0) return NotFound("Cart not found");
+
                 var mappedCart = mapper.Map<OrderCart>(cart);
                 var mappedCartDTO = mapper.Map<OrderCartDTO>(mappedCart);
                 return Ok(mappedCartDTO);
@@ -106,7 +110,8 @@ namespace AdeCartAPI.Controllers
             try
             {
                 var currentUser = await cartService.GetUser(username);
-                if (currentUser == null) return NotFound();
+                if (currentUser == null) return NotFound("User not found");
+
                 var carts = _cart.GetCarts(currentUser.Id);
                 if (carts.Select(s => s.OrderStatus == 0).Contains(true))
                 {
@@ -139,11 +144,12 @@ namespace AdeCartAPI.Controllers
             try
             {
                 var currentUser = await cartService.GetUser(username);
-                if (currentUser == null) return NotFound();
+                if (currentUser == null) return NotFound("User not found");
+
                 var cart = mapper.Map<OrderCart>(updatecart);
                 cart.UserId = currentUser.Id;
                 var currentCart = _cart.GetCart(cart.OrderCartId,cart.UserId);
-                if (currentCart == null) return NotFound();
+                if (currentCart.OrderCartId == 0) return NotFound("Cart not found");
                 await _cart.UpdateCart(cart);
                 return Ok("Successful");
             }
