@@ -98,7 +98,7 @@
              
              <returns>A string status</returns>
         </member>
-        <member name="M:AdeCartAPI.Controllers.OrderCartController.GetCart(System.Int32,System.String)">
+        <member name="M:AdeCartAPI.Controllers.OrderCartController.GetCart(System.String,System.Int32)">
             <param name="username">
             the user's username
             </param>
