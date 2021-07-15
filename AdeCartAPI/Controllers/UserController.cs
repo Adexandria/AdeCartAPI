@@ -16,6 +16,7 @@ namespace AdeCartAPI.Controllers
     [SwaggerResponse((int)HttpStatusCode.OK, "Returns if sucessful")]
     [SwaggerResponse((int)HttpStatusCode.NotFound, "Returns if not found")]
     [SwaggerResponse((int)HttpStatusCode.BadRequest, "Returns no content")]
+    [SwaggerResponse((int)HttpStatusCode.Unauthorized)]
 
     [ApiController]
     [Route("api/User")]
