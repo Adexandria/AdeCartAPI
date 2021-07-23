@@ -216,15 +216,12 @@
              
              <returns>A string status</returns>
         </member>
-        <member name="M:AdeCartAPI.Controllers.PaymentController.PayCharge(System.String,System.Int32,System.Int32)">
+        <member name="M:AdeCartAPI.Controllers.PaymentController.PayCharge(System.String,System.Int32)">
             <param name="username">
             the user's username
             </param>
             <param name="cartId">
             the user's cart id
-            </param>
-            <param name="orderId">
-            the user's order id
             </param>
              <summary>
              Pay for order

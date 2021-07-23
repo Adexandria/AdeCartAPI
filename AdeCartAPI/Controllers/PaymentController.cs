@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Swashbuckle.AspNetCore.Annotations;
-
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace AdeCartAPI.Controllers
 {
@@ -16,9 +16,10 @@ namespace AdeCartAPI.Controllers
     [SwaggerResponse((int)HttpStatusCode.BadRequest)]
     [SwaggerResponse((int)HttpStatusCode.Unauthorized)]
 
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/{username}/carts/{cartId}/orders/payment")]
     [ApiController]
-    [Authorize]
+    
     public class PaymentController : ControllerBase
     {
 
